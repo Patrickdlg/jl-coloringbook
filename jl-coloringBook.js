@@ -14,7 +14,7 @@ customElements.define('jl-coloringbook', class extends HTMLElement
         this.loadIcons();
     }
 
-    connectedCallback()
+    init()
     {
         jQuery(this).css('display','block');
         //default colors
@@ -40,10 +40,21 @@ customElements.define('jl-coloringbook', class extends HTMLElement
         this.slots=jQuery(`<div class="slots" style="display:none"><slot></slot></div>`).appendTo(this.shadowRoot)
     
 
-        this.slots.on('slotchange', function()
-            {
-                me.drawTemplate()
-            });
+        this.slots.off('slotchange').on('slotchange', function()
+        {
+            me.drawTemplate()
+        });
+    }
+
+    connectedCallback()
+    {
+        let auto =jQuery(this).attr('autoinit');
+
+        if (auto!=='0')
+        {
+            this.init();
+        } 
+    
     }
 
     loadIcons()
@@ -514,7 +525,7 @@ customElements.define('jl-coloringbook', class extends HTMLElement
             let path = this.paths[i];
             if (path.length<1) continue;
             if (!path[0].c) { path[0].c=0;}
-            ctx.strokeStyle = `rgba(${this.paletteColors[path[0].c]}, 0.8)`;
+            ctx.strokeStyle = `${this.paletteColors[path[0].c]}`;
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
             ctx.lineWidth = path[0].s * (this.img[0].naturalWidth/this.img.width());
